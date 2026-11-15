@@ -1,0 +1,18 @@
+Finding 2: Cross-Site Scripting (XSS) - Reflected
+===================================================
+
+Endpoint: GET http://localhost:3000/#/search?q=<iframe%20src%3D"javascript:alert(%60xss%60)">
+
+Payload entered into the search bar:
+<iframe src="javascript:alert(`xss`)">
+
+Result:
+- A JavaScript alert box reading "xss" fired immediately on page load.
+- See evidence/02-xss.png for the triggered alert.
+
+Root cause:
+The search term is reflected back into the page's DOM without proper
+output encoding or sanitization, and the application's Content-Security-
+Policy (if any) does not block inline/javascript: URI execution in this
+context. This allows arbitrary attacker-controlled HTML/JS to execute in
+the context of a victim's browser session (e.g. via a crafted shared link).

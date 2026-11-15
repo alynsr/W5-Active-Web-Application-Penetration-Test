@@ -1,0 +1,41 @@
+Finding 3: Broken Access Control (IDOR) - Basket Access
+===================================================
+
+Authenticated session: UserId 26, own basket id = 6 (bid: 6 in JWT payload)
+
+Request sent from the browser console (DevTools > Console), using the
+authenticated user's own JWT, but targeting a DIFFERENT basket ID:
+
+fetch('http://localhost:3000/rest/basket/1', {
+  headers: { 'Authorization': 'Bearer <JWT of UserId 26, bid:6>' }
+}).then(r => r.json()).then(console.log)
+
+Result:
+{status: 'success', data: {}}
+
+- The server accepted the request and returned basket ID 1's data
+  (empty in this case, but returned successfully) despite the
+  authenticated token belonging to a user whose own basket is ID 6,
+  not ID 1.
+- Application's internal challenge tracker logged:
+  "info: Solved basketAccessChallenge (View Basket)"
+  confirming this is a recognized, intended vulnerability in the app.
+- See evidence/03-idor-network-tab.png (shows own basket id=6, UserId=26)
+  and evidence/03-idor-and-sqli-solved-log.png (shows the request/
+  response plus the solved-challenge confirmation).
+
+Root cause:
+The /rest/basket/{id} endpoint does not verify that the basket ID
+requested belongs to the authenticated user making the request (no
+server-side ownership check) - a classic Insecure Direct Object
+Reference (IDOR).
+
+Note on direct URL access:
+Navigating directly to http://localhost:3000/rest/basket/1 in the browser
+address bar returns 401 UnauthorizedError: No Authorization header was
+found. This is expected - the app uses a Bearer token in an Authorization
+header (not cookies) for API auth, so a plain address-bar GET never
+carries it. This is NOT evidence that access control is working; it is
+simply a transport-layer difference. The in-console fetch() request
+above, which does carry the token, is the correct test and is what
+confirms the IDOR.

