@@ -23,7 +23,9 @@
 
 > ⚠️ This application is an official OWASP training project. No real users, data, or production systems were involved. All testing was performed against a locally-hosted, self-controlled instance.
 
-**Evidence:** `evidence/00-target-running.png` — the application running locally and reachable in the browser.
+**Evidence:** 
+<img src="evidence/00-target-running.png">
+The application running locally and reachable in the browser.
 
 ---
 
@@ -54,7 +56,8 @@
 The login form concatenates user input directly into a SQL query server-side. The payload `' OR 1=1--` closes the string early, injects a condition that is always true, and comments out the rest of the query (including the password check) — causing the backend to authenticate as the first matching user record without a valid password.
 
 **Evidence:**
-- `evidence/03-idor-and-sqli-solved-log.png` — server log confirms `Solved 2-star loginAdminChallenge (Login Admin)`, verifying the bypass was successfully triggered.
+<img src="evidence/03-idor-and-sqli-solved-log.png">
+Server log confirms `Solved 2-star loginAdminChallenge (Login Admin)`, verifying the bypass was successfully triggered.
 - `evidence/requests/01-sqli-login.txt` — exact payload and request detail.
 
 ---
@@ -73,7 +76,8 @@ The login form concatenates user input directly into a SQL query server-side. Th
 The search term is reflected into the page DOM without output encoding, allowing injected HTML/JavaScript to execute in the browser. In this test, the payload triggered an immediate JavaScript `alert()` box, confirming arbitrary script execution in the victim's session context.
 
 **Evidence:**
-- `evidence/02-xss.png` — triggered alert box.
+<img src="evidence/02-xss.png">
+Triggered alert box.
 - `evidence/requests/02-xss.txt` — exact payload and URL used.
 
 ---
@@ -89,8 +93,10 @@ The search term is reflected into the page DOM without output encoding, allowing
 The endpoint does not verify that the requesting user owns the basket ID being queried. Using a valid session token for basket ID 6, a request for basket ID 1 was accepted by the server (`{status: 'success', data: {}}`) instead of being rejected, confirming the application trusts the client-supplied ID rather than checking ownership server-side.
 
 **Evidence:**
-- `evidence/03-idor-network-tab.png` — DevTools Network tab showing the authenticated user's own basket request (`basket/6`, `UserId: 26`).
-- `evidence/03-idor-and-sqli-solved-log.png` — console output of the cross-basket request plus server log confirming `Solved basketAccessChallenge (View Basket)`.
+<img src="evidence/03-idor-network-tab.png">
+DevTools Network tab showing the authenticated user's own basket request (`basket/6`, `UserId: 26`).
+<img src="evidence/03-idor-and-sqli-solved-log.png">
+console output of the cross-basket request plus server log confirming `Solved basketAccessChallenge (View Basket)`.
 - `evidence/requests/03-idor.txt` — exact `fetch()` request used, plus a note on why direct address-bar access returns 401 (no Authorization header on a plain GET — a transport detail, not proof the control is working).
 
 ---
