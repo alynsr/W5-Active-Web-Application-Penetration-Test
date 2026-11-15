@@ -58,7 +58,7 @@ The login form concatenates user input directly into a SQL query server-side. Th
 **Evidence:**
 <img src="03-idor-and-sqli-solved-log.png">
 Server log confirms `Solved 2-star loginAdminChallenge (Login Admin)`, verifying the bypass was successfully triggered.
-- `evidence/requests/01-sqli-login.txt` — exact payload and request detail.
+- `01-sqli-login.txt` — exact payload and request detail.
 
 ---
 
@@ -78,7 +78,7 @@ The search term is reflected into the page DOM without output encoding, allowing
 **Evidence:**
 <img src="02-xss.png">
 Triggered alert box.
-- `evidence/requests/02-xss.txt` — exact payload and URL used.
+- `02-xss.txt` — exact payload and URL used.
 
 ---
 
@@ -97,7 +97,7 @@ The endpoint does not verify that the requesting user owns the basket ID being q
 DevTools Network tab showing the authenticated user's own basket request (`basket/6`, `UserId: 26`).
 <img src="03-idor-and-sqli-solved-log.png">
 console output of the cross-basket request plus server log confirming `Solved basketAccessChallenge (View Basket)`.
-- `evidence/requests/03-idor.txt` — exact `fetch()` request used, plus a note on why direct address-bar access returns 401 (no Authorization header on a plain GET — a transport detail, not proof the control is working).
+- `03-idor.txt` — exact `fetch()` request used, plus a note on why direct address-bar access returns 401 (no Authorization header on a plain GET — a transport detail, not proof the control is working).
 
 ---
 
@@ -123,22 +123,6 @@ An attacker who can bypass authentication via SQL injection does not even need t
 - No automated scanning tool (e.g. OWASP ZAP active scan) was run to completion; findings were identified and confirmed manually.
 
 ---
-
-## 📁 Repository Structure
-
-```
-.
-├── README.md
-└── evidence/
-    ├── 00-target-running.png
-    ├── 02-xss.png
-    ├── 03-idor-network-tab.png
-    ├── 03-idor-and-sqli-solved-log.png
-    └── requests/
-        ├── 01-sqli-login.txt
-        ├── 02-xss.txt
-        └── 03-idor.txt
-```
 
 ---
 
