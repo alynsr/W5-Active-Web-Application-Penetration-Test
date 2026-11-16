@@ -2,7 +2,7 @@
 
 **Name:** NUR ALYA INSYIRAH BINTI KAMARULZAMAN
 
-**Class:** L02-B04
+**Class:** L01-B03
 
 **Course:** IKB21403 Vulnerability Analysis
 
@@ -24,7 +24,9 @@
 > ⚠️ This application is an official OWASP training project. No real users, data, or production systems were involved. All testing was performed against a locally-hosted, self-controlled instance.
 
 **Evidence:** 
+
 <img src="00-target-running.png">
+
 The application running locally and reachable in the browser.
 
 ---
@@ -52,7 +54,7 @@ The application running locally and reachable in the browser.
 - Email: `' OR 1=1--`
 - Password: `x` (any value)
 
-**Description:**
+> **Description:**
 The login form concatenates user input directly into a SQL query server-side. The payload `' OR 1=1--` closes the string early, injects a condition that is always true, and comments out the rest of the query (including the password check) — causing the backend to authenticate as the first matching user record without a valid password.
 
 **Evidence:**
@@ -76,8 +78,11 @@ Server log confirms `Solved 2-star loginAdminChallenge (Login Admin)`, verifying
 The search term is reflected into the page DOM without output encoding, allowing injected HTML/JavaScript to execute in the browser. In this test, the payload triggered an immediate JavaScript `alert()` box, confirming arbitrary script execution in the victim's session context.
 
 **Evidence:**
+
 <img src="02-xss.png">
+
 Triggered alert box.
+
 - `02-xss.txt` — exact payload and URL used.
 
 ---
@@ -89,13 +94,17 @@ Triggered alert box.
 
 **Method:** Authenticated as UserId 26 (own basket ID = 6), then requested `basket/1` — a basket belonging to a different user — using own valid JWT.
 
-**Description:**
+>**Description:**
 The endpoint does not verify that the requesting user owns the basket ID being queried. Using a valid session token for basket ID 6, a request for basket ID 1 was accepted by the server (`{status: 'success', data: {}}`) instead of being rejected, confirming the application trusts the client-supplied ID rather than checking ownership server-side.
 
 **Evidence:**
+
 <img src="03-idor-network-tab.png">
+
 DevTools Network tab showing the authenticated user's own basket request (`basket/6`, `UserId: 26`).
+
 <img src="03-idor-and-sqli-solved-log.png">
+
 console output of the cross-basket request plus server log confirming `Solved basketAccessChallenge (View Basket)`.
 - `03-idor.txt` — exact `fetch()` request used, plus a note on why direct address-bar access returns 401 (no Authorization header on a plain GET — a transport detail, not proof the control is working).
 
@@ -121,8 +130,6 @@ An attacker who can bypass authentication via SQL injection does not even need t
 - Direct browser address-bar requests to `/rest/basket/{id}` returned 401 because the app uses Bearer-token auth rather than cookies — this was a transport-layer limitation of that specific test method, not a sign the access control was working, and was worked around using an authenticated `fetch()` call from the DevTools console instead.
 - Testing focused on three vulnerability classes (SQLi, XSS, IDOR) within the time available; the full OWASP Top 10 was not exhaustively tested against this target.
 - No automated scanning tool (e.g. OWASP ZAP active scan) was run to completion; findings were identified and confirmed manually.
-
----
 
 ---
 
